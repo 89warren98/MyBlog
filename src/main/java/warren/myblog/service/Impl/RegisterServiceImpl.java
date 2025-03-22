@@ -49,6 +49,8 @@ public class RegisterServiceImpl implements RegisterService {
             //用户名重复
         return Result.fail(ErrorCode.ACCOUNT_EXIST.getCode(),ErrorCode.ACCOUNT_EXIST.getMsg());
         }
+        sysUser.setAvatar("/img_1.png");
+
         //加盐并进行md5加密
         String newpassword=sysUser.getPassword()+salt;
         String password = DigestUtils.md5DigestAsHex(newpassword.getBytes());

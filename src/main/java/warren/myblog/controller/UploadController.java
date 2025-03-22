@@ -31,4 +31,5 @@ public class UploadController {
         }
         return Result.fail(20001, "上传失败");
     }
+
 }

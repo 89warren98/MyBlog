@@ -16,6 +16,7 @@ import warren.myblog.service.SysUserService;
 import warren.myblog.vo.Params.ErrorCode;
 import warren.myblog.vo.Params.LoginParams;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +62,7 @@ public class LoginServiceImpl implements LoginService {
 
         // 4. 登录成功，更新 lastLogin 时间
 
-        sysUser.setLastLogin(null); // 让 MyBatis-Plus 触发自动填充
+        sysUser.setLastLogin(LocalDateTime.now()); // 让 MyBatis-Plus 触发自动填充
         sysUserService.updateById(sysUser); // 触发 updateFill 逻辑
 
         // 5. 生成 Token

@@ -17,8 +17,12 @@ spring:
     salt: 'mszlu!@#'
   servlet:
     multipart:
-      max-request-size: 20MB  # 上传文件的总大小限制
-      max-file-size: 2MB      # 单个文件的大小限制
+      max-request-size: 35MB  # 上传文件的总大小限制
+      max-file-size: 10MB      # 单个文件的大小限制
+
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: Asia/Shanghai
 
 qiniu:
   accessKey: tgQV_ryc5cfqNKIlYzHGBYoC8mimc6y8d0Y_r5f4

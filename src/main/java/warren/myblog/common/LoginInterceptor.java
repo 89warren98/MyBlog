@@ -13,7 +13,6 @@ import warren.myblog.vo.Params.ErrorCode;
 
 /**
  * 登录拦截器（LoginInterceptor）
- *
  * 该拦截器用于拦截所有请求，检查请求头中是否包含合法的 Token，
  * 以此判断用户是否已登录，并决定是否放行请求。
  */
@@ -26,7 +25,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     /**
      * 在请求处理之前执行拦截
-     *
      * @param request  HttpServletRequest 对象，包含请求信息
      * @param response HttpServletResponse 对象，用于返回响应
      * @param handler  处理器对象，通常是一个 Controller 方法

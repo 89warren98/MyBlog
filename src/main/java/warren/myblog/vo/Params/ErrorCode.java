@@ -14,7 +14,8 @@ public enum  ErrorCode {
     SESSION_TIME_OUT(90001,"会话超时"),
     NO_LOGIN(90002,"未登录"),
     ACCOUNT_EXIST(10004,"账号已存在"),
-    ARTICLE_NOT_EXIST(10005,"文章不存在");
+    ARTICLE_NOT_EXIST(10005,"文章不存在"),
+    DELETE_ERROR(10006,"删除失败");
     private int code;
     private String msg;
 

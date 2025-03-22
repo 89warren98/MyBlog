@@ -1,42 +1,55 @@
 package warren.myblog.utils;
 
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
+import io.jsonwebtoken.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * jwt令牌,登录用
+ * JWT 令牌工具类
  */
 public class JWTUtils {
 
-    private static final String jwtToken = "123456Mszlu!@#$$";
+    private static final String jwtToken = "123456Warren98!@#$$"; // 签名密钥
+    private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 小时
 
-    public static String createToken(Long userId){
-        Map<String,Object> claims = new HashMap<>();
-        claims.put("userId",userId);
-        JwtBuilder jwtBuilder = Jwts.builder()
-                .signWith(SignatureAlgorithm.HS256, jwtToken) // 签发算法，秘钥为jwtToken
-                .setClaims(claims) // body数据，要唯一，自行设置
-                .setIssuedAt(new Date()) // 设置签发时间
-                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 *  1000));// 一天的有效时间
-        String token = jwtBuilder.compact();
-        return token;
+    /**
+     * 生成 Token
+     */
+    public static String createToken(Long userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+
+        return Jwts.builder()
+                .setClaims(claims)  // 载荷
+                .setIssuedAt(new Date()) // 签发时间
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 过期时间
+                .signWith(SignatureAlgorithm.HS256, jwtToken) // 签名算法
+                .compact();
     }
 
-    public static Map<String, Object> checkToken(String token){
+    /**
+     * 解析 Token
+     */
+    public static Map<String, Object> checkToken(String token) {
         try {
-            Jwt parse = Jwts.parser().setSigningKey(jwtToken).parse(token);
-            return (Map<String, Object>) parse.getBody();
-        }catch (Exception e){
-            e.printStackTrace();
+            Claims claims = (Claims) Jwts.parser()
+                    .setSigningKey(jwtToken) // 设置签名密钥
+                    .parseClaimsJws(token)  // 解析 JWT
+                    .getBody(); // 获取载荷
+
+            return claims;
+        } catch (ExpiredJwtException e) {
+            System.err.println("Token 已过期：" + e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            System.err.println("不支持的 Token：" + e.getMessage());
+        } catch (MalformedJwtException e) {
+            System.err.println("无效的 Token：" + e.getMessage());
+        } catch (SignatureException e) {
+            System.err.println("签名验证失败：" + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("非法参数：" + e.getMessage());
         }
         return null;
-
     }
-
 }

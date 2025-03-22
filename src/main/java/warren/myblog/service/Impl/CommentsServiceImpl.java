@@ -160,4 +160,38 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
         List<Comment> comments = this.commentsMapper.selectList(queryWrapper);
         return copyList(comments);
     }
+
+    /**
+     * 删除评论
+     * @param commentId
+     * @param currentUser
+     * @return
+     */
+    @Override
+    public Result deleteComment(Long commentId, SysUser currentUser) {
+
+        // 1. 查找评论
+        Comment comment = commentsMapper.selectById(commentId);
+        if (comment == null) {
+            return Result.fail(404, "要删除的评论不存在");
+        }
+        // 2. 查找评论对应的文章
+        Article article = articleMapper.selectById(comment.getArticleId());
+        if (article == null) {
+            return Result.fail(404, "文章不存在");
+        }
+        // 3. 判断是否有权限删除
+        boolean isCommentAuthor = comment.getCommentatorId().equals(currentUser.getId());
+        boolean isArticleAuthor = article.getAuthorId().equals(currentUser.getId());
+        if (!isCommentAuthor && !isArticleAuthor) {
+            return Result.fail(403, "您无权删除该评论");
+        }
+        // 4. 执行删除
+        int rows = commentsMapper.deleteById(commentId);
+        if (rows > 0) {
+            return Result.success("删除成功!");
+        } else {
+            return Result.fail(500, "删除失败");
+        }
+    }
 }

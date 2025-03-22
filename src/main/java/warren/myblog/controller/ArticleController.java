@@ -5,9 +5,18 @@ import org.springframework.web.bind.annotation.*;
 import warren.myblog.aop.Cache;
 import warren.myblog.aop.LogAnnotation;
 import warren.myblog.common.Result;
+import warren.myblog.common.UserThreadLocal;
+import warren.myblog.mapper.ArticleMapper;
+import warren.myblog.pojo.Article;
+import warren.myblog.pojo.SysUser;
 import warren.myblog.service.ArticleService;
 import warren.myblog.vo.Params.ArticleParam;
 import warren.myblog.vo.Params.PageParams;
+
+import java.util.List;
+
+import static warren.myblog.vo.Params.ErrorCode.DELETE_ERROR;
+import static warren.myblog.vo.Params.ErrorCode.PARAMS_ERROR;
 
 /*
  * author: Warren
@@ -19,6 +28,9 @@ public class ArticleController {
     private static final int limit=3;
     @Autowired
     private ArticleService articleService;
+
+    @Autowired
+    private ArticleMapper articleMapper;
 
     /**
      * 查询文章信息
@@ -69,12 +81,36 @@ public class ArticleController {
     public Result viewArticle(@PathVariable Long id) {
         return articleService.viewArticleById(id);
     }
+
     /**
-     *
+     * 发布文章
+     * @param articleParam
+     * @return
      */
     @PostMapping("/publish")
     public Result publish(@RequestBody ArticleParam articleParam){
         return articleService.publish(articleParam);
     }
 
+    /**
+     * 删除文章
+     * @param ids
+     * @return
+     */
+    @PostMapping("/deleteBatch")
+    public Result deleteArticles(@RequestBody List<Long> ids) {
+        return articleService.deleteArticles(ids);
+    }
+
+    /**
+     * 搜索文章
+     * @param articleParam
+     * @return
+     */
+    @PostMapping("search")
+    public Result search(@RequestBody ArticleParam articleParam){
+        //写一个搜索接口
+        String search = articleParam.getSearch();
+        return articleService.searchArticle(search);
+    }
 }

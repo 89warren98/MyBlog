@@ -13,9 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.qiniu.storage.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
 @Component
 public class QiniuUtils {
 

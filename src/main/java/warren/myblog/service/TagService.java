@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import warren.myblog.common.Result;
 import warren.myblog.pojo.Article;
 import warren.myblog.pojo.Tag;
+import warren.myblog.vo.Dto.TagDTO;
 import warren.myblog.vo.TagVo;
 
 import java.util.List;
@@ -52,4 +53,17 @@ public interface TagService extends IService<Tag> {
      * @return
      */
     Result findAllDetailsById(Long id);
+
+    /**
+     * 新增标签
+     * @return
+     */
+    Result addtag(TagDTO tagDto);
+
+    /**
+     * 删除标签
+     * @param id
+     * @return
+     */
+    Result removeTagById(Long id);
 }

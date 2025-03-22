@@ -6,6 +6,8 @@ import warren.myblog.pojo.Article;
 import warren.myblog.vo.Params.ArticleParam;
 import warren.myblog.vo.Params.PageParams;
 
+import java.util.List;
+
 /*
  * author: Warren
  */
@@ -52,5 +54,18 @@ public interface ArticleService extends IService<Article> {
     Result publish(ArticleParam articleParam);
 
 
+    /**
+     * 删除文章
+     * @param ids
+     * @return
+     */
+    Result deleteArticles(List<Long> ids);
 
+
+    /**
+     * 搜索文章
+     * @param search
+     * @return
+     */
+    Result searchArticle(String search);
 }

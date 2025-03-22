@@ -3,6 +3,7 @@ package warren.myblog.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import warren.myblog.common.Result;
 import warren.myblog.pojo.Comment;
+import warren.myblog.pojo.SysUser;
 import warren.myblog.vo.Params.CommentParam;
 
 /*
@@ -23,4 +24,5 @@ public interface CommentsService extends IService<Comment> {
      */
     Result comment(CommentParam commentParam);
 
+    Result deleteComment(Long commentId, SysUser currentUser);
 }

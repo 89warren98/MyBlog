@@ -19,15 +19,16 @@
 
     <select id="listArchives" resultType="warren.myblog.vo.Dto.ArchiveDTO">
         SELECT
-            YEAR(STR_TO_DATE(create_date, '%Y%m%d%H%i%s')) AS year,
-            MONTH(STR_TO_DATE(create_date, '%Y%m%d%H%i%s')) AS month,
-            COUNT(*) AS count
+        YEAR(STR_TO_DATE(create_date, '%Y-%m-%d %H:%i:%s')) AS year,  <!-- 修正格式 -->
+        MONTH(STR_TO_DATE(create_date, '%Y-%m-%d %H:%i:%s')) AS month, <!-- 修正格式 -->
+        COUNT(*) AS count
         FROM ms_article
         WHERE create_date IS NOT NULL
-        GROUP BY YEAR(STR_TO_DATE(create_date, '%Y%m%d%H%i%s')),
-                 MONTH(STR_TO_DATE(create_date, '%Y%m%d%H%i%s'))
+        GROUP BY YEAR(STR_TO_DATE(create_date, '%Y-%m-%d %H:%i:%s')),
+        MONTH(STR_TO_DATE(create_date, '%Y-%m-%d %H:%i:%s'))
         ORDER BY year DESC, month DESC;
     </select>
+
     <select id="listArticle" resultMap="articleMap">
         SELECT * FROM ms_article
         <where>
@@ -37,17 +38,17 @@
             </if>
             <if test="year != null and year != '' and month != null and month != ''">
                 AND (
-                DATE_FORMAT(STR_TO_DATE(create_date, '%Y%m%d%H%i%s'), '%Y') = #{year}
-                AND DATE_FORMAT(STR_TO_DATE(create_date, '%Y%m%d%H%i%s'), '%m') = #{month}
+                DATE_FORMAT(STR_TO_DATE(create_date, '%Y-%m-%d %H:%i:%s'), '%Y') = #{year}
+                AND DATE_FORMAT(STR_TO_DATE(create_date, '%Y-%m-%d %H:%i:%s'), '%c') = #{month}
                 )
             </if>
-
             <if test="tagId != null">
                 AND id IN (SELECT article_id FROM ms_article_tag WHERE tag_id=#{tagId})
             </if>
         </where>
-        ORDER BY create_date DESC
+        ORDER BY weight DESC, view_counts DESC, create_date DESC
     </select>
+
 
 
 

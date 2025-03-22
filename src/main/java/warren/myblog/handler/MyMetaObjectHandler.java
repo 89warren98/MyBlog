@@ -11,23 +11,15 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
     @Override
     public void insertFill(MetaObject metaObject) {
-        String currentTime = LocalDateTime.now().format(FORMATTER);
-        this.strictInsertFill(metaObject, "createDate", String.class, currentTime);
-        this.strictInsertFill(metaObject, "lastLogin", String.class, currentTime);
-        // 先检查 weight 是否已经有值
-        Object weightValue = this.getFieldValByName("weight", metaObject);
-        if (weightValue == null) {
-            this.setFieldValByName("weight", Article.Article_Common, metaObject);
-        }
+        this.strictInsertFill(metaObject, "createDate",  LocalDateTime.class,  LocalDateTime.now());
+        this.strictInsertFill(metaObject, "lastLogin",  LocalDateTime.class,  LocalDateTime.now());
+        this.strictInsertFill(metaObject, "weight", Integer.class, Article.Article_Common);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        String currentTime = LocalDateTime.now().format(FORMATTER);
-        this.strictUpdateFill(metaObject, "lastLogin", String.class, currentTime);
+        this.strictUpdateFill(metaObject, "lastLogin", LocalDateTime.class,  LocalDateTime.now());
     }
 }

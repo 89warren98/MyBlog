@@ -1,12 +1,10 @@
 package warren.myblog.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import warren.myblog.common.Result;
 import warren.myblog.service.TagService;
+import warren.myblog.vo.Dto.TagDTO;
 
 /*
  * author: Warren
@@ -18,6 +16,25 @@ public class TagController {
     private TagService tagService;
 
     /**
+     * 新增标签
+     * @param tagDto
+     * @return
+     */
+    @PostMapping("/add")
+    public Result addTag(@RequestBody TagDTO tagDto){
+        return tagService.addtag(tagDto);
+    }
+
+    /**
+     * 删除标签
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/{id}")
+    public Result removeTagById(@PathVariable("id") Long id){
+        return tagService.removeTagById(id);
+    }
+    /**
      * 获取最热标签,前六条
      *
      * @return
@@ -27,6 +44,7 @@ public class TagController {
         int tagNumber = 6;
         return tagService.getHotTags(tagNumber);
     }
+
 
     /**
      * 查询所有标签

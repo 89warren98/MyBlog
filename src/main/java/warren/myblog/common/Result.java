@@ -100,6 +100,7 @@ public class Result {
         this.data = data;
     }
 
+    @Override
     public String toString() {
         return "Result{success = " + success + ", code = " + code + ", msg = " + msg + ", data = " + data + "}";
     }

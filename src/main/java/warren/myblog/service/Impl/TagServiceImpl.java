@@ -5,11 +5,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import warren.myblog.common.Result;
+import warren.myblog.mapper.ArticleMapper;
+import warren.myblog.mapper.ArticleTagMapper;
 import warren.myblog.mapper.TagMapper;
+import warren.myblog.pojo.Article;
+import warren.myblog.pojo.ArticleTag;
 import warren.myblog.pojo.Tag;
 import warren.myblog.service.TagService;
+import warren.myblog.vo.Dto.TagDTO;
+import warren.myblog.vo.Params.ErrorCode;
 import warren.myblog.vo.TagVo;
 
 import java.util.ArrayList;
@@ -24,6 +31,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
 
     @Autowired
     private TagMapper tagMapper;
+    @Autowired
+    private ArticleTagMapper articleTagMapper;
+    @Autowired
+    private ArticleMapper articleMapper;
 
     public TagVo copy(Tag tag){
         TagVo tagVo = new TagVo();
@@ -114,5 +125,51 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         Tag tag = tagMapper.selectById(id);
         return Result.success(copy(tag));
     }
+
+    /**
+     * 新增标签
+     * @return
+     */
+    @Override
+    public Result addtag(TagDTO tagDto) {
+        Tag tag=new Tag();
+        tag.setTagName(tagDto.getTagName());
+
+        tagMapper.insert(tag);
+        return Result.success("添加标签成功!");
+    }
+
+    /**
+     * 删除标签
+     * @param id
+     * @return
+     */
+    @Transactional  // 保证所有操作在同一事务内，要么全部成功，要么全部回滚
+    @Override
+    public Result removeTagById(Long id) {
+        // 1. 获取该标签下所有关联文章的ID列表
+        List<Long> articleIds = articleTagMapper.selectArticleIdsByTagId(id);
+
+        // 2. 如果存在关联文章，则删除这些文章（此操作会直接删除文章记录）
+        if (!CollectionUtils.isEmpty(articleIds)) {
+            // 这里调用文章Mapper的批量删除接口，例如：
+            articleMapper.deleteBatchIds(articleIds);
+        }
+
+        // 3. 删除 ms_article_tag 表中所有关联该标签的记录
+        LambdaQueryWrapper<ArticleTag> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ArticleTag::getTagId, id);
+        articleTagMapper.delete(lambdaQueryWrapper);
+
+        // 4. 删除 ms_tag 表中的标签记录
+        int tagDeleted = tagMapper.deleteById(id);
+
+        if (tagDeleted > 0) {
+            return Result.success("删除标签及关联文章成功!");
+        } else {
+            return Result.fail(ErrorCode.DELETE_ERROR.getCode(), ErrorCode.DELETE_ERROR.getMsg());
+        }
+    }
+
 
 }
