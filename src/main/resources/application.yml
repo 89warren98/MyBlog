@@ -28,11 +28,7 @@ spring:
 #    date-format: yyyy-MM-dd HH:mm:ss
 #    time-zone: Asia/Shanghai
 
-qiniu:
-  accessKey: tgQV_ryc5cfqNKIlYzHGBYoC8mimc6y8d0Y_r5f4
-  accessSecretKey: 0ZoeVjorktOtJ3x0IQXYzXEIoGYq0gk-CM4-6tyo
-  bucketName: warren98
-  region: huadong
+
 
 mybatis-plus:
   configuration:
