@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import warren.myblog.common.Result;
+import warren.myblog.common.UserThreadLocal;
 import warren.myblog.mapper.ArticleMapper;
 import warren.myblog.mapper.ArticleTagMapper;
 import warren.myblog.mapper.TagMapper;
 import warren.myblog.pojo.Article;
 import warren.myblog.pojo.ArticleTag;
+import warren.myblog.pojo.SysUser;
 import warren.myblog.pojo.Tag;
 import warren.myblog.service.TagService;
 import warren.myblog.vo.Dto.TagDTO;
@@ -132,8 +134,11 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
      */
     @Override
     public Result addtag(TagDTO tagDto) {
+        SysUser sysUser = UserThreadLocal.get();
+        Long sysUserId = sysUser.getId();
         Tag tag=new Tag();
         tag.setTagName(tagDto.getTagName());
+        tag.setCreateId(sysUserId);
 
         tagMapper.insert(tag);
         return Result.success("添加标签成功!");
@@ -147,12 +152,30 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     @Transactional  // 保证所有操作在同一事务内，要么全部成功，要么全部回滚
     @Override
     public Result removeTagById(Long id) {
+        // 从线程上下文获取当前登录用户
+        SysUser currentUser = UserThreadLocal.get();
+        if (currentUser == null) {
+            return Result.fail(ErrorCode.NO_LOGIN.getCode(), "未登录,不能删除标签,请先登录!");
+        }
+
+        // 查询该标签
+        Tag tag = tagMapper.selectById(id);
+        if (tag == null) {
+            return Result.fail(ErrorCode.NOT_FOUND.getCode(), "标签不存在哦~");
+        }
+        // 打印日志调试
+        System.out.println("当前用户ID: " + currentUser.getId());
+        System.out.println("标签创建者ID: " + tag.getCreateId());
+        // 校验当前用户是否为标签创建者
+        if (!tag.getCreateId().equals(currentUser.getId())) {
+            return Result.fail(ErrorCode.NO_PERMISSION.getCode(), "只能删除自己创建的标签!");
+        }
+
         // 1. 获取该标签下所有关联文章的ID列表
         List<Long> articleIds = articleTagMapper.selectArticleIdsByTagId(id);
 
         // 2. 如果存在关联文章，则删除这些文章（此操作会直接删除文章记录）
         if (!CollectionUtils.isEmpty(articleIds)) {
-            // 这里调用文章Mapper的批量删除接口，例如：
             articleMapper.deleteBatchIds(articleIds);
         }
 
@@ -165,11 +188,12 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         int tagDeleted = tagMapper.deleteById(id);
 
         if (tagDeleted > 0) {
-            return Result.success("删除标签及关联文章成功!");
+            return Result.success("删除标签成功!");
         } else {
             return Result.fail(ErrorCode.DELETE_ERROR.getCode(), ErrorCode.DELETE_ERROR.getMsg());
         }
     }
+
 
 
 }

@@ -32,11 +32,12 @@ public class TagController {
      */
     @DeleteMapping("/{id}")
     public Result removeTagById(@PathVariable("id") Long id){
-        return tagService.removeTagById(id);
+
+        System.out.println("进入该方法!");return tagService.removeTagById(id);
     }
+
     /**
      * 获取最热标签,前六条
-     *
      * @return
      */
     @GetMapping("/hot")
@@ -71,6 +72,6 @@ public class TagController {
      */
     @GetMapping("/detail/{id}")
     public Result findAllDetailsById(@PathVariable("id")Long id) {
-        return tagService.  findAllDetailsById(id);
+        return tagService.findAllDetailsById(id);
     }
 }

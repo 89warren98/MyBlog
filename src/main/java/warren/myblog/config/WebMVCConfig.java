@@ -31,16 +31,22 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 配置需要登录才能访问的接口
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/test",
+                .addPathPatterns(
+                        "/test",
                         "/comments/create/change",
                         "/articles/publish",
-// 当时没有加这个"/comments/delete,导致删除评论时总是显示未登录.
-// 解释:接口不会经过登录拦截器。这样，UserThreadLocal
-//就不会被设置，导致在删除操作时 UserThreadLocal.get() 返回 null，从而出现“未登录”的错误
                         "/comments/delete",
-                        "/articles/deleteBatch"
+                        "/articles/deleteBatch",
+                        "/tags/*" // 拦截所有 /tags/ 下的单级请求
+                )
+                // 排除不需要拦截的接口（例如 GET 请求的接口）
+                .excludePathPatterns(
+                        "/tags/hot",       // 获取最热标签
+                        "/tags",           // 获取所有标签（findAll）
+                        "/tags/detail",    // 查询所有标签详情
+                        "/tags/detail/*"   // 查询单个标签对应的文章详情
                 );
     }
+
 }
